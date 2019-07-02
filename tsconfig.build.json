@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "exclude": ["**/*.test.ts"],
   "compilerOptions": {
+    "allowJs": false,
     "declaration": true
   }
 }

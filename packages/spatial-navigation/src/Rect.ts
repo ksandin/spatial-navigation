@@ -1,6 +1,7 @@
 import { Vector } from './Vector';
+import { lineFunctions } from './lineFunctions';
 
-export class Bounds extends Vector {
+export class Rect extends Vector {
   get left() {
     return this.x;
   }
@@ -25,6 +26,10 @@ export class Bounds extends Vector {
     return this.x + this.width / 2;
   }
 
+  get center() {
+    return new Vector(this.centerX, this.centerY);
+  }
+
   get centerRight() {
     return new Vector(this.right, this.centerY);
   }
@@ -39,6 +44,24 @@ export class Bounds extends Vector {
 
   get centerBottom() {
     return new Vector(this.centerX, this.bottom);
+  }
+
+  line(b: Rect) {
+    const direction = this.center.direction(b.center);
+    const getLine = lineFunctions[direction];
+    return getLine(this, b);
+  }
+
+  scale(scaleX: number, scaleY: number = scaleX) {
+    return new Rect(this.x, this.y, this.width * scaleX, this.height * scaleY);
+  }
+
+  position(x: number, y: number) {
+    return new Rect(x, y, this.width, this.height);
+  }
+
+  resize(width: number, height: number = width) {
+    return new Rect(this.x, this.y, width, height);
   }
 
   constructor(

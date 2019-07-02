@@ -2,8 +2,8 @@ import { Direction } from './Direction';
 import { getNearestNodeInDirection } from './getNearestNodeInDirection';
 import { SpatialChangeHandler } from './SpatialChangeHandler';
 import { SpatialNode } from './SpatialNode';
-import { getBoundsForNodes } from './getBoundsForNodes';
-import { Bounds } from './Bounds';
+import { getRectsForNodes } from './getRectsForNodes';
+import { Rect } from './Rect';
 import { SpatialMeta } from './SpatialMeta';
 
 export class Spatial {
@@ -70,16 +70,16 @@ export class Spatial {
     if (!this.active) {
       return;
     }
-    const allBounds = getBoundsForNodes(this.nodes);
-    const activeBounds = allBounds[this.nodes.indexOf(this.active)];
-    const candidateBounds = allBounds.filter(item => item !== activeBounds);
+    const allRect = getRectsForNodes(this.nodes);
+    const activeRect = allRect[this.nodes.indexOf(this.active)];
+    const candidateRect = allRect.filter(item => item !== activeRect);
     for (const direction of directions) {
-      const nearestBounds = getNearestNodeInDirection(
-        activeBounds,
-        candidateBounds,
+      const nearestRect = getNearestNodeInDirection(
+        activeRect,
+        candidateRect,
         direction
       );
-      const node = this.nodes[allBounds.indexOf(nearestBounds!)];
+      const node = this.nodes[allRect.indexOf(nearestRect!)];
       if (node) {
         return node;
       }
@@ -87,9 +87,9 @@ export class Spatial {
   }
 
   getDefaultNode() {
-    const allBounds = getBoundsForNodes(this.nodes);
-    const topLeft = getTopLeftBounds(allBounds);
-    return this.nodes[allBounds.indexOf(topLeft)];
+    const allRect = getRectsForNodes(this.nodes);
+    const topLeft = getTopLeftRect(allRect);
+    return this.nodes[allRect.indexOf(topLeft)];
   }
 
   subscribeToChanges(handler: SpatialChangeHandler) {
@@ -106,8 +106,8 @@ export class Spatial {
     this.changeHandlers.forEach(emit => emit(oldActive, newActive));
 }
 
-function getTopLeftBounds(bounds: Bounds[]): Bounds {
-  return bounds.slice().sort((a, b) => {
+function getTopLeftRect(rect: Rect[]): Rect {
+  return rect.slice().sort((a, b) => {
     const s1 = a.x + a.y;
     const s2 = b.x + b.y;
     return s1 - s2;

@@ -1,20 +1,20 @@
 import { getNearestNodeInDirection } from './getNearestNodeInDirection';
-import { Bounds } from './Bounds';
+import { Rect } from './Rect';
 
-const middle = new Bounds(0, 0, 10, 10);
-const right = new Bounds(20, 0, 10, 10);
-const left = new Bounds(-20, 0, 10, 10);
-const up = new Bounds(0, -20, 10, 10);
-const down = new Bounds(0, 20, 10, 10);
+const middle = new Rect(0, 0, 10, 10);
+const right = new Rect(20, 0, 10, 10);
+const left = new Rect(-20, 0, 10, 10);
+const up = new Rect(0, -20, 10, 10);
+const down = new Rect(0, 20, 10, 10);
 const candidates = [
   right,
-  new Bounds(40, 0, 10, 10),
+  new Rect(40, 0, 10, 10),
   left,
-  new Bounds(-40, 0, 10, 10),
+  new Rect(-40, 0, 10, 10),
   up,
-  new Bounds(0, -40, 10, 10),
+  new Rect(0, -40, 10, 10),
   down,
-  new Bounds(0, 40, 10, 10)
+  new Rect(0, 40, 10, 10)
 ];
 
 describe('getNearestNodeInDirection', () => {

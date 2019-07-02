@@ -1,0 +1,15 @@
+{
+  "name": "spatial-navigation",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "dependencies": {},
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json -w",
+    "test": "jest"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}

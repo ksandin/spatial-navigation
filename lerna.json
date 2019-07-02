@@ -1,0 +1,11 @@
+{
+  "packages": ["packages/*"],
+  "command": {
+    "create": {
+      "homepage": "https://github.com/ksandin/spatial-navigation",
+      "license": "MIT"
+    }
+  },
+  "ignoreChanges": ["**/*.md"],
+  "version": "0.0.0"
+}

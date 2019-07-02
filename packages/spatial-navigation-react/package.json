@@ -1,0 +1,23 @@
+{
+  "name": "spatial-navigation-react",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "dependencies": {
+    "spatial-navigation": "0.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json -w",
+    "test": "jest --passWithNoTests"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}

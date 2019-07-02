@@ -2,16 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import { Spatial } from 'spatial-navigation';
-import { inputBehavior } from './inputBehavior';
-import { Providers } from './Providers';
-import { App } from './App';
+import { inputEffect } from './effects/inputEffect';
+import { App } from './components/App';
+import { First } from './components/First';
 
 const spatial = new Spatial();
-inputBehavior(spatial, window);
+inputEffect(spatial, window);
 ReactDOM.render(
-  <Providers spatial={spatial}>
-    <App />
-  </Providers>,
+  <App
+    spatial={spatial}
+    scenarios={[
+      { name: 'First', component: First },
+      { name: 'Second', component: First },
+      { name: 'Third', component: First }
+    ]}
+  />,
   document.getElementById('root')
 );
 

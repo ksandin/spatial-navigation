@@ -1,6 +1,6 @@
 import { Spatial, Direction } from 'spatial-navigation';
 
-export const inputBehavior = (spatial: Spatial, window: Window) => {
+export const inputEffect = (spatial: Spatial, window: Window) => {
   const onKeyDown = (e: KeyboardEvent) => {
     const direction = directionByKey[e.key];
     if (direction) {

@@ -12,6 +12,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "noEmit": false,
+    "sourceMap": true,
     "jsx": "react"
   },
   "exclude": ["node_modules"]

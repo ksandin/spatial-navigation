@@ -1,5 +1,7 @@
 import { Spatial } from '../Spatial';
 import { createNode } from './createNode';
+import { directions } from '../Direction';
+import { createNodesInDirection } from './createNodesInDirection';
 
 describe('Spatial', () => {
   // Adding and removing nodes
@@ -40,22 +42,30 @@ describe('Spatial', () => {
     spatial.remove(spatial.getActive()!);
     expect(spatial.getActive()).toBe(adjacent);
   });
-  it('can no longer navigate to a node that is removed', () => {
-    const spatial = new Spatial();
-    const row = [
-      createNode(0, 0, 20),
-      createNode(50, 0, 20),
-      createNode(100, 0, 20)
-    ];
-    const [left, middle, right] = row;
-    spatial.addBatch(row);
-    spatial.setActive(left);
-    spatial.remove(middle);
-    spatial.move('right');
-    expect(spatial.getActive()).toBe(right);
-  });
 
-  // Navigating
+  // Basic navigation (no groups)
+  for (const direction of directions) {
+    it(`can navigate ${direction}`, () => {
+      const spatial = new Spatial();
+      const row = createNodesInDirection(direction, 2);
+      spatial.addBatch(row);
+      spatial.setActive(row[0]);
+      spatial.move(direction);
+      expect(spatial.getActive()).toBe(row[1]);
+    });
+    it(`can no longer navigate ${direction} to a node that is removed`, () => {
+      const spatial = new Spatial();
+      const row = createNodesInDirection(direction, 3);
+      const [start, middle, end] = row;
+      spatial.addBatch(row);
+      spatial.setActive(start);
+      spatial.remove(middle);
+      spatial.move(direction);
+      expect(spatial.getActive()).toBe(end);
+    });
+  }
+
+  // Group navigation
   xit('can navigate to a sibling node within the group', () => {});
   xit('navigates to a parent sibling node when no siblings within its own group accept navigation', () => {});
   xit('can set a new node as active', () => {});

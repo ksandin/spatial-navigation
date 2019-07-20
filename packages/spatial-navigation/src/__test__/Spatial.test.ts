@@ -33,6 +33,14 @@ describe('Spatial', () => {
     spatial.addBatch(nodes);
     expect(spatial.getDefaultNode()).toBe(defaultNode);
   });
+
+  // Navigating
+  xit('can navigate to a sibling node within the group', () => {});
+  xit('navigates to a parent sibling node when no siblings within its own group accept navigation', () => {});
+  xit('can set a new node as active', () => {});
+  xit('reuses group memory by activating the memorized node', () => {});
+  xit('activates the nearest child node when navigating to a group without memory', () => {});
+  xit('activates the first child node when navigating to a group without memory and no nearest node', () => {});
 });
 
 const exampleNodes = () => {

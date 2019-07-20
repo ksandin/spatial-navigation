@@ -12,6 +12,10 @@ export class Spatial {
   private meta = new WeakMap<SpatialNode, SpatialMeta>();
   private changeHandlers: SpatialChangeHandler[] = [];
 
+  isActive(node: SpatialNode) {
+    return this.active === node;
+  }
+
   getActive() {
     return this.active;
   }
@@ -20,13 +24,34 @@ export class Spatial {
     return this.meta.get(this.active!);
   }
 
-  add(node: SpatialNode, meta?: SpatialMeta) {
+  setActive(newActive?: SpatialNode) {
+    const oldActive = this.active;
+    this.active = newActive;
+    if (oldActive !== newActive) {
+      this.emitChange(oldActive, newActive);
+    }
+  }
+
+  add(node: SpatialNode, meta?: SpatialMeta, refresh = true) {
     if (node) {
       this.meta.set(node, meta);
     }
     this.nodes.push(node);
+    if (refresh) {
+      this.refresh();
+    }
+  }
+
+  addBatch(batch: SpatialNode[], refresh = true) {
+    batch.forEach(node => this.add(node, undefined, false));
+    if (refresh) {
+      this.refresh();
+    }
+  }
+
+  refresh() {
     if (!this.active) {
-      this.setActive(node);
+      this.setActive(this.getDefaultNode());
     }
   }
 
@@ -41,18 +66,6 @@ export class Spatial {
       }
       this.nodes.splice(nodeIndex, 1);
     }
-  }
-
-  setActive(newActive?: SpatialNode) {
-    const oldActive = this.active;
-    this.active = newActive;
-    if (oldActive !== newActive) {
-      this.emitChange(oldActive, newActive);
-    }
-  }
-
-  isActive(node: SpatialNode) {
-    return this.active === node;
   }
 
   move(direction: Direction) {

@@ -1,5 +1,5 @@
-import { getNearestNodeInDirection } from './getNearestNodeInDirection';
-import { Rect } from './Rect';
+import { getNearestNodeInDirection } from '../getNearestNodeInDirection';
+import { Rect } from '../Rect';
 
 const middle = new Rect(0, 0, 10, 10);
 const right = new Rect(20, 0, 10, 10);

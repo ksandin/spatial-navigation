@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json -w",
-    "test": "jest"
+    "test": "jest",
+    "dev-test": "jest --watch"
   },
   "types": "dist/index.d.ts",
   "files": [

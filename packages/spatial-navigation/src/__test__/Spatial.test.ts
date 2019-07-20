@@ -2,7 +2,7 @@ import { Spatial } from '../Spatial';
 import { createNode } from './createNode';
 
 describe('Spatial', () => {
-  // Adding nodes
+  // Adding and removing nodes
   it('the default node is the top left node', () => {
     const spatial = new Spatial();
     const { defaultNode, nodes } = exampleNodes();
@@ -32,6 +32,27 @@ describe('Spatial', () => {
     const { defaultNode, nodes } = exampleNodes();
     spatial.addBatch(nodes);
     expect(spatial.getDefaultNode()).toBe(defaultNode);
+  });
+  it('activates adjacent node when removing active node', () => {
+    const spatial = new Spatial();
+    spatial.addBatch(fourNodesInASquare());
+    const adjacent = spatial.getAdjacentNode();
+    spatial.remove(spatial.getActive()!);
+    expect(spatial.getActive()).toBe(adjacent);
+  });
+  it('can no longer navigate to a node that is removed', () => {
+    const spatial = new Spatial();
+    const row = [
+      createNode(0, 0, 20),
+      createNode(50, 0, 20),
+      createNode(100, 0, 20)
+    ];
+    const [left, middle, right] = row;
+    spatial.addBatch(row);
+    spatial.setActive(left);
+    spatial.remove(middle);
+    spatial.move('right');
+    expect(spatial.getActive()).toBe(right);
   });
 
   // Navigating

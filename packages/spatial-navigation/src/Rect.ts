@@ -72,4 +72,14 @@ export class Rect extends Vector {
   ) {
     super(x, y);
   }
+
+  static box(rects: Rect[]) {
+    const left = rects.map(rect => rect.left).sort(numericCompare)[0];
+    const right = rects.map(rect => rect.right).sort(numericCompare)[0];
+    const top = rects.map(rect => rect.top).sort(numericCompare)[0];
+    const bottom = rects.map(rect => rect.bottom).sort(numericCompare)[0];
+    return new Rect(left, top, right - left, bottom - top);
+  }
 }
+
+const numericCompare = (a: number, b: number) => a - b;

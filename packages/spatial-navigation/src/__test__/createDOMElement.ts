@@ -1,4 +1,4 @@
-export const createNode = (
+export const createDOMElement = (
   x: number,
   y: number,
   width: number,

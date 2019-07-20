@@ -1,7 +1,11 @@
 import { Spatial } from '../Spatial';
-import { createNode } from './createNode';
+import { createDOMElement } from './createDOMElement';
 import { directions } from '../Direction';
-import { createNodesInDirection } from './createNodesInDirection';
+import {
+  createDOMElementsInDirection,
+  createSpatialElementsInDirection
+} from './createElementsInDirection';
+import { SpatialGroup, SpatialNavigator, Node } from '../Spatial2';
 
 describe('Spatial', () => {
   // Adding and removing nodes
@@ -42,12 +46,18 @@ describe('Spatial', () => {
     spatial.remove(spatial.getActive()!);
     expect(spatial.getActive()).toBe(adjacent);
   });
+  it('can set a new node as active', () => {
+    const spatial = new Spatial();
+    const node = createDOMElement(0, 0, 20);
+    spatial.setActive(node);
+    expect(spatial.getActive()).toBe(node);
+  });
 
   // Basic navigation (no groups)
   for (const direction of directions) {
     it(`can navigate ${direction}`, () => {
       const spatial = new Spatial();
-      const row = createNodesInDirection(direction, 2);
+      const row = createDOMElementsInDirection(direction, 2);
       spatial.addBatch(row);
       spatial.setActive(row[0]);
       spatial.move(direction);
@@ -55,7 +65,7 @@ describe('Spatial', () => {
     });
     it(`can no longer navigate ${direction} to a node that is removed`, () => {
       const spatial = new Spatial();
-      const row = createNodesInDirection(direction, 3);
+      const row = createDOMElementsInDirection(direction, 3);
       const [start, middle, end] = row;
       spatial.addBatch(row);
       spatial.setActive(start);
@@ -66,13 +76,51 @@ describe('Spatial', () => {
   }
 
   // Group navigation
-  xit('can navigate to a sibling node within the group', () => {});
-  xit('navigates to a parent sibling node when no siblings within its own group accept navigation', () => {});
-  xit('can set a new node as active', () => {});
-  xit('reuses group memory by activating the memorized node', () => {});
-  xit('activates the nearest child node when navigating to a group without memory', () => {});
-  xit('activates the first child node when navigating to a group without memory and no nearest node', () => {});
+  it('can navigate to a sibling node within a group', () => {
+    const group = new SpatialGroup();
+    const nodes = createSpatialElementsInDirection('right', 2);
+    group.add(...nodes);
+    new SpatialNavigator().navigate(group, 'right');
+    expectSameNodes(group.cursor, nodes[1]);
+  });
+  it('navigates to a parent sibling node when no siblings within its own group accept navigation', () => {
+    const root = new SpatialGroup();
+    const group = new SpatialGroup();
+    const [node1, node2] = createSpatialElementsInDirection('right', 2);
+    group.add(node1);
+    root.add(group, node2);
+    node1.setAsCursor();
+    new SpatialNavigator().navigate(root, 'right');
+    expectSameNodes(root.cursor, node2);
+  });
+  it('reuses group memory by activating the memorized node', () => {
+    const root = new SpatialGroup();
+    const group = new SpatialGroup();
+    const [node1, node2] = createSpatialElementsInDirection('down', 2);
+    const [throwAway, node3] = createSpatialElementsInDirection('right', 2);
+    group.add(node1, node2);
+    root.add(group, node3);
+    node2.setAsCursor();
+    const navigator = new SpatialNavigator();
+    navigator.navigate(root, 'right');
+    navigator.navigate(root, 'left');
+    expectSameNodes(root.cursor, node2);
+  });
+  it('activates the nearest child node when navigating to a group without memory', () => {
+    const root = new SpatialGroup();
+    const group = new SpatialGroup();
+    const [node1, node2] = createSpatialElementsInDirection('down', 2);
+    const [throwAway, node3] = createSpatialElementsInDirection('right', 2);
+    group.add(node1, node2);
+    root.add(group, node3);
+    node3.setAsCursor();
+    new SpatialNavigator().navigate(root, 'left');
+    expectSameNodes(root.cursor, node1);
+  });
 });
+
+const expectSameNodes = (n1?: Node, n2?: Node) =>
+  expect(n1 && n1.id).toBe(n2 && n2.id);
 
 const exampleNodes = () => {
   const nodes = fourNodesInASquare();
@@ -83,8 +131,8 @@ const exampleNodes = () => {
 };
 
 const fourNodesInASquare = () => [
-  createNode(20, 0, 20), // top right
-  createNode(20, 20, 20), // bottom right
-  createNode(0, 0, 20), // top left
-  createNode(0, 20, 20) // bottom left
+  createDOMElement(20, 0, 20), // top right
+  createDOMElement(20, 20, 20), // bottom right
+  createDOMElement(0, 0, 20), // top left
+  createDOMElement(0, 20, 20) // bottom left
 ];

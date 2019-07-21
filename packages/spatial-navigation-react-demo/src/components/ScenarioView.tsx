@@ -1,21 +1,18 @@
 import * as React from 'react';
-import { SpatialGroupView } from 'spatial-navigation-react';
+import { useSpatialGroup } from 'spatial-navigation-react';
 import styled from 'styled-components/macro';
 import { Scenario } from '../Scenario';
 
 export const ScenarioView: React.FC<Scenario> = ({
   name,
   component: Component
-}) => (
-  <SpatialGroupView>
-    {() => (
-      <Container>
-        <Name>{name}</Name>
-        <Component />
-      </Container>
-    )}
-  </SpatialGroupView>
-);
+}) =>
+  useSpatialGroup(() => (
+    <Container>
+      <Name>{name}</Name>
+      <Component />
+    </Container>
+  ));
 
 const Container = styled.div`
   padding: 50px;

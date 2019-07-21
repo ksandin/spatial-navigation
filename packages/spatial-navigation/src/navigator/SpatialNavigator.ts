@@ -16,7 +16,7 @@ export class SpatialNavigator {
       if (node instanceof SpatialGroup) {
         return Rect.box(this.getRectsForNodes(node.nodes));
       }
-      throw new Error(`Node type not supported: ${node}`);
+      throw new Error(`Node type not supported: ${node.constructor.name}`);
     });
   }
 

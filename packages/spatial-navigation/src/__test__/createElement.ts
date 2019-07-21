@@ -1,4 +1,13 @@
-export const createDOMElement = (
+import { SpatialElement } from '../SpatialElement';
+
+export const createElement = (
+  x: number = 0,
+  y: number = 0,
+  width: number = 10,
+  height: number = width
+) => new SpatialElement(createDOMElement(x, y, width, height));
+
+const createDOMElement = (
   x: number,
   y: number,
   width: number,

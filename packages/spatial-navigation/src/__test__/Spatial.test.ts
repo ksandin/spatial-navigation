@@ -1,125 +1,143 @@
-import { Spatial } from '../Spatial';
-import { createDOMElement } from './createDOMElement';
 import { directions } from '../Direction';
-import {
-  createDOMElementsInDirection,
-  createSpatialElementsInDirection
-} from './createElementsInDirection';
-import { SpatialGroup, SpatialNavigator, Node } from '../Spatial2';
+import { SpatialNavigator } from '../SpatialNavigator';
+import { SpatialNode } from '../SpatialNode';
+import { SpatialGroup } from '../SpatialGroup';
+import { createElement } from './createElement';
+import { createElementsInDirection } from './createElementsInDirection';
+import { getDirectionAngle } from '../getDirectionAngle';
+import { getAngleDirection } from '../getAngleDirection';
 
 describe('Spatial', () => {
   // Adding and removing nodes
   it('the default node is the top left node', () => {
-    const spatial = new Spatial();
+    const group = new SpatialGroup();
     const { defaultNode, nodes } = exampleNodes();
-    nodes.forEach(node => spatial.add(node));
-    expect(spatial.getDefaultNode()).toBe(defaultNode);
+    nodes.forEach(node => group.add(node));
+    expectSameNodes(new SpatialNavigator().getDefaultNode(group), defaultNode);
   });
-  it('a new system has no active node', () => {
-    const spatial = new Spatial();
-    expect(spatial.getActive()).toBeUndefined();
+  it('a new system has no cursor', () => {
+    const group = new SpatialGroup();
+    expect(group.cursor).toBeUndefined();
   });
-  it('adding a node when there is no active node will set the added node as active', () => {
-    const spatial = new Spatial();
-    const node = document.createElement('div');
-    spatial.add(node);
-    expect(spatial.getActive()).toBe(node);
+  it('adding a node when there is no cursor will set the added node as cursor', () => {
+    const group = new SpatialGroup();
+    const node = createElement();
+    group.add(node);
+    expectSameNodes(group.cursor, node);
   });
-  it('adding a node when there is an active node does not change the active node', () => {
-    const spatial = new Spatial();
-    const node1 = document.createElement('div');
-    const node2 = document.createElement('div');
-    spatial.add(node1);
-    spatial.add(node2);
-    expect(spatial.getActive()).toBe(node1);
+  it('adding a node when there is a cursor does not change the cursor', () => {
+    const group = new SpatialGroup();
+    const node1 = createElement();
+    const node2 = createElement();
+    group.add(node1);
+    group.add(node2);
+    expectSameNodes(group.cursor, node1);
   });
-  it('adding nodes in batch when there is no active node will set the default node as as active', () => {
-    const spatial = new Spatial();
+  it('adding nodes in batch when there is no cursor will set the default node as cursor', () => {
+    const group = new SpatialGroup();
     const { defaultNode, nodes } = exampleNodes();
-    spatial.addBatch(nodes);
-    expect(spatial.getDefaultNode()).toBe(defaultNode);
+    group.add(...nodes);
+    expectSameNodes(new SpatialNavigator().getDefaultNode(group), defaultNode);
   });
-  it('activates adjacent node when removing active node', () => {
-    const spatial = new Spatial();
-    spatial.addBatch(fourNodesInASquare());
-    const adjacent = spatial.getAdjacentNode();
-    spatial.remove(spatial.getActive()!);
-    expect(spatial.getActive()).toBe(adjacent);
+  it('can get arbitrary adjacent node', () => {
+    const group = new SpatialGroup();
+    group.add(...fourNodesInASquare());
+    const navigator = new SpatialNavigator();
+    const adjacent = navigator.getAdjacentNode(group.cursor!);
+    expect(adjacent).toBeDefined();
+    expect(adjacent).not.toBe(group.cursor);
   });
-  it('can set a new node as active', () => {
-    const spatial = new Spatial();
-    const node = createDOMElement(0, 0, 20);
-    spatial.setActive(node);
-    expect(spatial.getActive()).toBe(node);
+  it('can remove cursor node and reset cursor to adjacent node', () => {
+    const group = new SpatialGroup();
+    group.add(...fourNodesInASquare());
+    const navigator = new SpatialNavigator();
+    const adjacent = navigator.getAdjacentNode(group.cursor!);
+    navigator.removeNodeAndSetCursorToAdjacent(group.cursor!);
+    expectSameNodes(group.cursor, adjacent);
+  });
+  it('can set a specific node as cursor', () => {
+    const group = new SpatialGroup();
+    const node1 = createElement(0, 0, 20);
+    const node2 = createElement(0, 0, 20);
+    group.add(node1, node2);
+    node2.setAsCursor();
+    expectSameNodes(group.cursor, node2);
   });
 
-  // Basic navigation (no groups)
+  // Navigation
   for (const direction of directions) {
+    const angle = getDirectionAngle(direction);
+    const acrossDirection = getAngleDirection(angle + Math.PI / 2);
+    const inverseDirection = getAngleDirection(angle + Math.PI);
+
     it(`can navigate ${direction}`, () => {
-      const spatial = new Spatial();
-      const row = createDOMElementsInDirection(direction, 2);
-      spatial.addBatch(row);
-      spatial.setActive(row[0]);
-      spatial.move(direction);
-      expect(spatial.getActive()).toBe(row[1]);
+      const group = new SpatialGroup();
+      const row = createElementsInDirection(direction, 2);
+      group.add(...row);
+      row[0].setAsCursor();
+      new SpatialNavigator().navigate(group, direction);
+      expectSameNodes(group.cursor, row[1]);
     });
+
     it(`can no longer navigate ${direction} to a node that is removed`, () => {
-      const spatial = new Spatial();
-      const row = createDOMElementsInDirection(direction, 3);
+      const group = new SpatialGroup();
+      const row = createElementsInDirection(direction, 3);
       const [start, middle, end] = row;
-      spatial.addBatch(row);
-      spatial.setActive(start);
-      spatial.remove(middle);
-      spatial.move(direction);
-      expect(spatial.getActive()).toBe(end);
+      group.add(...row);
+      start.setAsCursor();
+      group.remove(middle);
+      new SpatialNavigator().navigate(group, direction);
+      expectSameNodes(group.cursor, end);
+    });
+
+    it(`can navigate ${direction} to a sibling node within a group`, () => {
+      const group = new SpatialGroup();
+      const nodes = createElementsInDirection(direction, 2);
+      group.add(...nodes);
+      new SpatialNavigator().navigate(group, direction);
+      expectSameNodes(group.cursor, nodes[1]);
+    });
+
+    it(`can navigate ${direction} to a parent sibling node when no siblings within its own group accept navigation`, () => {
+      const root = new SpatialGroup();
+      const group = new SpatialGroup();
+      const [node1, node2] = createElementsInDirection(direction, 2);
+      group.add(node1);
+      root.add(group, node2);
+      node1.setAsCursor();
+      new SpatialNavigator().navigate(root, direction);
+      expectSameNodes(root.cursor, node2);
+    });
+
+    it(`can reuses group memory when navigating ${direction}`, () => {
+      const root = new SpatialGroup();
+      const group = new SpatialGroup();
+      const [node1, node2] = createElementsInDirection(acrossDirection, 2);
+      const [throwAway, node3] = createElementsInDirection(direction, 2);
+      group.add(node1, node2);
+      root.add(group, node3);
+      node2.setAsCursor();
+      const navigator = new SpatialNavigator();
+      navigator.navigate(root, direction);
+      navigator.navigate(root, inverseDirection);
+      expectSameNodes(root.cursor, node2);
+    });
+
+    it(`activates the nearest child node when navigating ${direction} to a group without memory`, () => {
+      const root = new SpatialGroup();
+      const group = new SpatialGroup();
+      const [node1, node2] = createElementsInDirection(acrossDirection, 2);
+      const [throwAway, node3] = createElementsInDirection(direction, 2);
+      group.add(node1, node2);
+      root.add(group, node3);
+      node3.setAsCursor();
+      new SpatialNavigator().navigate(root, inverseDirection);
+      expectSameNodes(root.cursor, node1);
     });
   }
-
-  // Group navigation
-  it('can navigate to a sibling node within a group', () => {
-    const group = new SpatialGroup();
-    const nodes = createSpatialElementsInDirection('right', 2);
-    group.add(...nodes);
-    new SpatialNavigator().navigate(group, 'right');
-    expectSameNodes(group.cursor, nodes[1]);
-  });
-  it('navigates to a parent sibling node when no siblings within its own group accept navigation', () => {
-    const root = new SpatialGroup();
-    const group = new SpatialGroup();
-    const [node1, node2] = createSpatialElementsInDirection('right', 2);
-    group.add(node1);
-    root.add(group, node2);
-    node1.setAsCursor();
-    new SpatialNavigator().navigate(root, 'right');
-    expectSameNodes(root.cursor, node2);
-  });
-  it('reuses group memory by activating the memorized node', () => {
-    const root = new SpatialGroup();
-    const group = new SpatialGroup();
-    const [node1, node2] = createSpatialElementsInDirection('down', 2);
-    const [throwAway, node3] = createSpatialElementsInDirection('right', 2);
-    group.add(node1, node2);
-    root.add(group, node3);
-    node2.setAsCursor();
-    const navigator = new SpatialNavigator();
-    navigator.navigate(root, 'right');
-    navigator.navigate(root, 'left');
-    expectSameNodes(root.cursor, node2);
-  });
-  it('activates the nearest child node when navigating to a group without memory', () => {
-    const root = new SpatialGroup();
-    const group = new SpatialGroup();
-    const [node1, node2] = createSpatialElementsInDirection('down', 2);
-    const [throwAway, node3] = createSpatialElementsInDirection('right', 2);
-    group.add(node1, node2);
-    root.add(group, node3);
-    node3.setAsCursor();
-    new SpatialNavigator().navigate(root, 'left');
-    expectSameNodes(root.cursor, node1);
-  });
 });
 
-const expectSameNodes = (n1?: Node, n2?: Node) =>
+const expectSameNodes = (n1?: SpatialNode, n2?: SpatialNode) =>
   expect(n1 && n1.id).toBe(n2 && n2.id);
 
 const exampleNodes = () => {
@@ -131,8 +149,8 @@ const exampleNodes = () => {
 };
 
 const fourNodesInASquare = () => [
-  createDOMElement(20, 0, 20), // top right
-  createDOMElement(20, 20, 20), // bottom right
-  createDOMElement(0, 0, 20), // top left
-  createDOMElement(0, 20, 20) // bottom left
+  createElement(50, 0, 10), // top right
+  createElement(50, 50, 10), // bottom right
+  createElement(0, 0, 10), // top left
+  createElement(0, 50, 10) // bottom left
 ];

@@ -1,10 +1,10 @@
-import { directions } from '../Direction';
-import { SpatialNavigator } from '../SpatialNavigator';
+import { directions } from '../math/Direction';
+import { SpatialNavigator } from '../navigator/SpatialNavigator';
 import { SpatialGroup } from '../SpatialGroup';
 import { createElement } from './createElement';
 import { createElementsInDirection } from './createElementsInDirection';
-import { getDirectionAngle } from '../getDirectionAngle';
-import { getAngleDirection } from '../getAngleDirection';
+import { getDirectionAngle } from '../math/getDirectionAngle';
+import { getAngleDirection } from '../math/getAngleDirection';
 
 describe('Spatial', () => {
   // Adding and removing nodes

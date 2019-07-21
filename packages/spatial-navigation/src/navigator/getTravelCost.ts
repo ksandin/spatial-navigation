@@ -1,5 +1,5 @@
-import { getAngleDelta } from './getAngleDelta';
-import { Line } from './Line';
+import { getAngleDelta } from '../math/getAngleDelta';
+import { Line } from '../math/Line';
 
 export function getTravelCost([a, b]: Line, desiredAngle: number): number {
   const distance = a.distance(b);

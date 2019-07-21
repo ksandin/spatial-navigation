@@ -1,9 +1,9 @@
-import { Rect } from './Rect';
-import { Direction } from './Direction';
+import { Rect } from '../math/Rect';
+import { Direction } from '../math/Direction';
 import { getNearestNodeInDirection } from './getNearestNodeInDirection';
-import { SpatialElement } from './SpatialElement';
-import { SpatialNode } from './SpatialNode';
-import { SpatialGroup } from './SpatialGroup';
+import { SpatialElement } from '../SpatialElement';
+import { SpatialNode } from '../SpatialNode';
+import { SpatialGroup } from '../SpatialGroup';
 
 export class SpatialNavigator {
   getRectsForNodes(nodes: SpatialNode[]): Rect[] {

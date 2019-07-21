@@ -1,8 +1,8 @@
-import { Rect } from './Rect';
-import { Direction } from './Direction';
+import { Rect } from '../math/Rect';
+import { Direction } from '../math/Direction';
 import { getTravelCost } from './getTravelCost';
-import { lineFunctions } from './lineFunctions';
-import { getDirectionAngle } from './getDirectionAngle';
+import { lineFunctions } from '../math/lineFunctions';
+import { getDirectionAngle } from '../math/getDirectionAngle';
 
 export function getNearestNodeInDirection(
   start: Rect,

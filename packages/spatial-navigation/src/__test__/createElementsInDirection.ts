@@ -1,5 +1,5 @@
-import { Direction } from '../Direction';
-import { Vector } from '../Vector';
+import { Direction } from '../math/Direction';
+import { Vector } from '../math/Vector';
 import { createElement } from './createElement';
 
 export const createElementsInDirection = (

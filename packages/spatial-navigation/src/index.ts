@@ -1,5 +1,7 @@
 export { SpatialGroup } from './SpatialGroup';
+export { SpatialElement } from './SpatialElement';
 export { SpatialNode } from './SpatialNode';
+export { SpatialNavigator } from './navigator/SpatialNavigator';
 export { Direction } from './math/Direction';
 export { Vector } from './math/Vector';
 export { Rect } from './math/Rect';

@@ -9,7 +9,9 @@ export class SpatialNavigator {
   getRectsForNodes(nodes: SpatialNode[]): Rect[] {
     return nodes.map(node => {
       if (node instanceof SpatialElement) {
-        return getRectForHTMLElement(node.domElement);
+        return node.domElement
+          ? getRectForHTMLElement(node.domElement)
+          : Rect.empty;
       }
       if (node instanceof SpatialGroup) {
         return Rect.box(this.getRectsForNodes(node.nodes));
@@ -20,9 +22,10 @@ export class SpatialNavigator {
 
   getNearestNodeInDirection(
     start: SpatialNode,
-    candidates: SpatialNode[],
+    pool: SpatialNode[],
     direction: Direction
   ): SpatialNode | undefined {
+    const candidates = pool.filter(acceptsNavigation);
     const startRect = this.getRectsForNodes([start])[0];
     const candidateRects = this.getRectsForNodes(candidates);
     const nearestRect = getNearestNodeInDirection(
@@ -88,7 +91,7 @@ export class SpatialNavigator {
   }
 
   getDefaultNode(group: SpatialGroup) {
-    const candidates = group.leafs;
+    const candidates = group.leafs.filter(acceptsNavigation);
     const allRect = this.getRectsForNodes(candidates);
     const topLeft = getTopLeftRect(allRect);
     return candidates[allRect.indexOf(topLeft)];
@@ -115,3 +118,5 @@ const getRectForHTMLElement = (element: Element) => {
   const rect = element.getBoundingClientRect();
   return new Rect(rect.left, rect.top, rect.width, rect.height);
 };
+
+const acceptsNavigation = (node: SpatialNode) => node.acceptsNavigation;

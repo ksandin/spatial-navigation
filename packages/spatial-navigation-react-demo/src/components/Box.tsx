@@ -1,12 +1,16 @@
 import * as React from 'react';
-import { useSpatial } from 'spatial-navigation-react';
+import { useSpatialElement } from 'spatial-navigation-react';
 
 export const Box: React.FC = () => {
   const ref = React.useRef<HTMLDivElement>(null);
-  const isActive = useSpatial(ref);
+  const element = useSpatialElement(ref);
   return (
-    <div ref={ref} style={style(isActive)}>
-      {isActive ? 'active' : 'inactive'}
+    <div ref={ref} style={style(element.isCursor)}>
+      {element.isCursor
+        ? 'active'
+        : element.isLocalCursor
+        ? 'memory'
+        : 'inactive'}
     </div>
   );
 };

@@ -1,20 +1,14 @@
 import * as React from 'react';
 import styled from 'styled-components/macro';
 import {
-  Spatial,
   Rect,
   getTravelCost,
   getDirectionAngle,
   getAngleDelta
 } from 'spatial-navigation';
-import { SpatialContext } from 'spatial-navigation-react';
 import { Reset } from 'styled-reset';
 
-export type CostDemoProps = {
-  spatial: Spatial;
-};
-
-export const CostDemo: React.FC<CostDemoProps> = ({ spatial }) => {
+export const CostDemo: React.FC = () => {
   const containerSize = new Rect(0, 0, 500, 500);
   const rect1 = new Rect(225, 225, 50, 50);
   const [rect2, setRect2] = React.useState(new Rect(10, 10, 25, 25));
@@ -33,7 +27,7 @@ export const CostDemo: React.FC<CostDemoProps> = ({ spatial }) => {
   const cost = getTravelCost(line, directionAngle);
 
   return (
-    <SpatialContext.Provider value={spatial}>
+    <>
       <Reset />
       <Container>
         <Body
@@ -59,7 +53,7 @@ export const CostDemo: React.FC<CostDemoProps> = ({ spatial }) => {
           Cost: {cost.toFixed(2)}
         </Info>
       </Container>
-    </SpatialContext.Provider>
+    </>
   );
 };
 

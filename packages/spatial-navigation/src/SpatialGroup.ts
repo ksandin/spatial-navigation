@@ -26,9 +26,10 @@ export class SpatialGroup extends SpatialNode {
     for (const node of nodes) {
       this.nodes.push(node);
       node.parent = this;
+      node.emitChange('added');
     }
     if (!this.localCursor) {
-      this.localCursor = nodes[0];
+      this.setLocalCursor(nodes[0]);
     }
   }
 
@@ -43,19 +44,28 @@ export class SpatialGroup extends SpatialNode {
       this.nodes.splice(index, 1);
       if (node.parent) {
         if (node.parent.localCursor === node) {
-          node.parent.localCursor = undefined;
+          node.parent.setLocalCursor(undefined);
         }
         node.parent = undefined;
       }
+      node.emitChange('removed');
     }
     return removed;
   }
 
-  setLocalCursor(node: SpatialNode) {
-    if (!this.nodes.includes(node)) {
+  setLocalCursor(node?: SpatialNode) {
+    if (this.localCursor === node) {
+      return;
+    }
+    if (node && !this.nodes.includes(node)) {
       throw new Error('A cursor must be one the groups nodes');
     }
+    const previousCursor = this.localCursor;
     this.localCursor = node;
+    if (previousCursor) {
+      previousCursor.emitChange('cursorChanged');
+    }
+    this.emitChange('cursorChanged');
   }
 }
 

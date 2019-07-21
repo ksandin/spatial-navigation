@@ -1,10 +1,10 @@
-import { Spatial, Direction } from 'spatial-navigation';
+import { SpatialNavigator, SpatialGroup, Direction } from 'spatial-navigation';
 
-export const inputEffect = (spatial: Spatial, window: Window) => {
+export const inputEffect = (root: SpatialGroup, window: Window) => {
   const onKeyDown = (e: KeyboardEvent) => {
     const direction = directionByKey[e.key];
     if (direction) {
-      spatial.move(direction);
+      new SpatialNavigator().navigate(root, direction);
     }
   };
   window.addEventListener('keydown', onKeyDown);

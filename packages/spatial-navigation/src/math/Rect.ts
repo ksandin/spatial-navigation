@@ -2,6 +2,8 @@ import { Vector } from './Vector';
 import { lineFunctions } from './lineFunctions';
 
 export class Rect extends Vector {
+  static readonly empty = new Rect();
+
   get left() {
     return this.x;
   }

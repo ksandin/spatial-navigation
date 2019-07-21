@@ -63,6 +63,8 @@ describe('Spatial', () => {
     expect(group.cursor).toBe(node2);
   });
 
+  // TODO add tests for node events
+
   // Navigation
   for (const direction of directions) {
     const angle = getDirectionAngle(direction);

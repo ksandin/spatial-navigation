@@ -1,17 +1,11 @@
 import { SpatialNode } from './SpatialNode';
 
 export class SpatialElement extends SpatialNode {
-  constructor(public domElement: Element) {
-    super();
+  get acceptsNavigation() {
+    return !!this.domElement;
   }
 
-  get id() {
-    const {
-      left,
-      top,
-      width,
-      height
-    } = this.domElement.getBoundingClientRect();
-    return `{x: ${left}, y: ${top}, width: ${width}, height: ${height}}`;
+  constructor(public domElement?: Element | null) {
+    super();
   }
 }

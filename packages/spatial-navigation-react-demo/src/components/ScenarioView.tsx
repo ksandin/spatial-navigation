@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { SpatialGroupView } from 'spatial-navigation-react';
 import styled from 'styled-components/macro';
 import { Scenario } from '../Scenario';
 
@@ -6,10 +7,14 @@ export const ScenarioView: React.FC<Scenario> = ({
   name,
   component: Component
 }) => (
-  <Container>
-    <Name>{name}</Name>
-    <Component />
-  </Container>
+  <SpatialGroupView>
+    {() => (
+      <Container>
+        <Name>{name}</Name>
+        <Component />
+      </Container>
+    )}
+  </SpatialGroupView>
 );
 
 const Container = styled.div`

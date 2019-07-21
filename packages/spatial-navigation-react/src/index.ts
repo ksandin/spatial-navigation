@@ -1,4 +1,5 @@
-export { SpatialContext } from './SpatialContext';
-export { useSpatialIndex } from './useSpatialIndex';
-export { useSpatialChanges } from './useSpatialChanges';
-export { useSpatial } from './useSpatial';
+export { SpatialGroupContext } from './SpatialGroupContext';
+export { SpatialGroupView } from './SpatialGroupView';
+export { useSpatialNode } from './useSpatialNode';
+export { useSpatialGroup } from './useSpatialGroup';
+export { useSpatialElement } from './useSpatialElement';

@@ -1,6 +1,5 @@
 import { directions } from '../Direction';
 import { SpatialNavigator } from '../SpatialNavigator';
-import { SpatialNode } from '../SpatialNode';
 import { SpatialGroup } from '../SpatialGroup';
 import { createElement } from './createElement';
 import { createElementsInDirection } from './createElementsInDirection';
@@ -13,7 +12,7 @@ describe('Spatial', () => {
     const group = new SpatialGroup();
     const { defaultNode, nodes } = exampleNodes();
     nodes.forEach(node => group.add(node));
-    expectSameNodes(new SpatialNavigator().getDefaultNode(group), defaultNode);
+    expect(new SpatialNavigator().getDefaultNode(group)).toBe(defaultNode);
   });
   it('a new system has no cursor', () => {
     const group = new SpatialGroup();
@@ -23,7 +22,7 @@ describe('Spatial', () => {
     const group = new SpatialGroup();
     const node = createElement();
     group.add(node);
-    expectSameNodes(group.cursor, node);
+    expect(group.cursor).toBe(node);
   });
   it('adding a node when there is a cursor does not change the cursor', () => {
     const group = new SpatialGroup();
@@ -31,13 +30,13 @@ describe('Spatial', () => {
     const node2 = createElement();
     group.add(node1);
     group.add(node2);
-    expectSameNodes(group.cursor, node1);
+    expect(group.cursor).toBe(node1);
   });
   it('adding nodes in batch when there is no cursor will set the default node as cursor', () => {
     const group = new SpatialGroup();
     const { defaultNode, nodes } = exampleNodes();
     group.add(...nodes);
-    expectSameNodes(new SpatialNavigator().getDefaultNode(group), defaultNode);
+    expect(new SpatialNavigator().getDefaultNode(group)).toBe(defaultNode);
   });
   it('can get arbitrary adjacent node', () => {
     const group = new SpatialGroup();
@@ -53,7 +52,7 @@ describe('Spatial', () => {
     const navigator = new SpatialNavigator();
     const adjacent = navigator.getAdjacentNode(group.cursor!);
     navigator.removeNodeAndSetCursorToAdjacent(group.cursor!);
-    expectSameNodes(group.cursor, adjacent);
+    expect(group.cursor).toBe(adjacent);
   });
   it('can set a specific node as cursor', () => {
     const group = new SpatialGroup();
@@ -61,7 +60,7 @@ describe('Spatial', () => {
     const node2 = createElement(0, 0, 20);
     group.add(node1, node2);
     node2.setAsCursor();
-    expectSameNodes(group.cursor, node2);
+    expect(group.cursor).toBe(node2);
   });
 
   // Navigation
@@ -76,7 +75,7 @@ describe('Spatial', () => {
       group.add(...row);
       row[0].setAsCursor();
       new SpatialNavigator().navigate(group, direction);
-      expectSameNodes(group.cursor, row[1]);
+      expect(group.cursor).toBe(row[1]);
     });
 
     it(`can no longer navigate ${direction} to a node that is removed`, () => {
@@ -87,7 +86,7 @@ describe('Spatial', () => {
       start.setAsCursor();
       group.remove(middle);
       new SpatialNavigator().navigate(group, direction);
-      expectSameNodes(group.cursor, end);
+      expect(group.cursor).toBe(end);
     });
 
     it(`can navigate ${direction} to a sibling node within a group`, () => {
@@ -95,7 +94,7 @@ describe('Spatial', () => {
       const nodes = createElementsInDirection(direction, 2);
       group.add(...nodes);
       new SpatialNavigator().navigate(group, direction);
-      expectSameNodes(group.cursor, nodes[1]);
+      expect(group.cursor).toBe(nodes[1]);
     });
 
     it(`can navigate ${direction} to a parent sibling node when no siblings within its own group accept navigation`, () => {
@@ -106,7 +105,7 @@ describe('Spatial', () => {
       root.add(group, node2);
       node1.setAsCursor();
       new SpatialNavigator().navigate(root, direction);
-      expectSameNodes(root.cursor, node2);
+      expect(root.cursor).toBe(node2);
     });
 
     it(`can reuses group memory when navigating ${direction}`, () => {
@@ -120,7 +119,7 @@ describe('Spatial', () => {
       const navigator = new SpatialNavigator();
       navigator.navigate(root, direction);
       navigator.navigate(root, inverseDirection);
-      expectSameNodes(root.cursor, node2);
+      expect(root.cursor).toBe(node2);
     });
 
     it(`activates the nearest child node when navigating ${direction} to a group without memory`, () => {
@@ -132,13 +131,10 @@ describe('Spatial', () => {
       root.add(group, node3);
       node3.setAsCursor();
       new SpatialNavigator().navigate(root, inverseDirection);
-      expectSameNodes(root.cursor, node1);
+      expect(root.cursor).toBe(node1);
     });
   }
 });
-
-const expectSameNodes = (n1?: SpatialNode, n2?: SpatialNode) =>
-  expect(n1 && n1.id).toBe(n2 && n2.id);
 
 const exampleNodes = () => {
   const nodes = fourNodesInASquare();

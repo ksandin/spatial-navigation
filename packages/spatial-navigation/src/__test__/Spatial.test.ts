@@ -108,7 +108,7 @@ describe('Spatial', () => {
       expect(root.cursor).toBe(node2);
     });
 
-    it(`can reuses group memory when navigating ${direction}`, () => {
+    it(`can reuse group memory when navigating ${direction}`, () => {
       const root = new SpatialGroup();
       const group = new SpatialGroup();
       const [node1, node2] = createElementsInDirection(acrossDirection, 2);
